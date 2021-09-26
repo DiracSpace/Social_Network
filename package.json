@@ -3,9 +3,12 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng build --watch true",
+    "prod": "ng build --prod",
+    "start:ng": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "gc": "ng g c --flat --inline-style --inline-template --skip-tests --module=app",
     "test": "ng test"
   },
   "private": true,
