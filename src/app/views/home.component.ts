@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { environment } from 'src/environments/environment';
-import { PublicacionesResponse } from '../models/publicaciones.view';
+import { PublicacionesRequest, PublicacionesResponse } from '../models/publicaciones.view';
 import { ApiService } from '../services/rest-api/api.service';
 
 const template = /*html*/`
@@ -8,6 +9,8 @@ const template = /*html*/`
   <div class="d-flex flex-column">
     <div class="container p-2 mt-5 mb-5 posts-container">
       <app-text-field
+        [readonly]="true"
+        (click)="openCreatePostModal()"
         placeholder="¿Qué estás pensando?">
       </app-text-field>
     </div>
@@ -42,10 +45,34 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private api: ApiService,
+    private active: NgbActiveModal
   ) { }
 
   ngOnInit(): void {
     this.init();
+  }
+
+  openCreatePostModal() {
+    this.api.modals.openPostModal().then(
+      (post: PublicacionesRequest) => {
+        if (post === undefined) {
+          this.active.close();
+        } else {
+          this.createPost(post)
+        }
+      }
+    ).catch(
+      (error: any) => console.error(error)
+    )
+  }
+
+  private async createPost(post: PublicacionesRequest) {
+    try {
+      const createdPost = await this.api.publicaciones.createPost(post);
+      this.posts.push(createdPost);
+    } finally {
+      console.log("done");
+    }
   }
 
   private async init() {

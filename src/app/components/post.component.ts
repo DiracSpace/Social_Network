@@ -16,10 +16,13 @@ const template = /*html*/`
     <p>{{ content }}</p>
   </div>
   <div class="container mt-2 post-reactions-container">
-    <div class="d-flex icon-text-container">
-      <i *ngIf="liked" class="material-icons" (click)="onClickUnlikePost()">favorite</i>
-      <i *ngIf="!liked" class="material-icons" (click)="onClickLikePost()">favorite_border</i>
-      <p>{{ likes }}</p>
+    <div class="d-flex justify-content-between">
+      <div class="d-flex icon-text-container">
+        <i *ngIf="liked" class="material-icons" (click)="onClickUnlikePost()">favorite</i>
+        <i *ngIf="!liked" class="material-icons" (click)="onClickLikePost()">favorite_border</i>
+        <p>{{ likes }}</p>
+      </div>
+      <i class="material-icons">comment</i>
     </div>
   </div>
 </div>
@@ -52,10 +55,6 @@ const styles = [/*css*/`
     cursor: pointer;
     vertical-align: top;
     color: #b0b3b8;
-  }
-  
-  p {
-    margin-left: 2%;
   }
 }
 `];
@@ -91,7 +90,7 @@ export class PostComponent implements OnInit {
       await this.api.likes.createLike({
         idPublicacion: this.postId,
         idUsuario: environment.IdUsuario,
-        llave_secreta: environment.key
+        llave_Secreta: environment.key
       });
     } finally {
       this.liked = true;
@@ -104,7 +103,7 @@ export class PostComponent implements OnInit {
       await this.api.likes.removeLike({
         idPublicacion: this.postId,
         idUsuario: environment.IdUsuario,
-        llave_secreta: environment.key
+        llave_Secreta: environment.key
       });
     } finally {
       this.liked = false;

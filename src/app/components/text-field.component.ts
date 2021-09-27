@@ -20,12 +20,14 @@ const template = /*html*/`
   [(ngModel)]="value"
   (change)="valueChange.emit(value)"
   (keyup.enter)="enter.emit()"
+  (focus)="focus.emit()"
 />
 
 <textarea
   *ngIf="isTextArea"
   type="text"
   class="form-control"
+  [placeholder]="placeholder"
   [ngStyle]="textInputStyle"
   [(ngModel)]="value"
   (change)="valueChange.emit(value)"
@@ -83,6 +85,7 @@ export class TextFieldComponent implements OnInit {
   @Input() label: string;
 
   @Output() enter = new EventEmitter<void>();
+  @Output() focus = new EventEmitter<void>();
 
   constructor() { }
 

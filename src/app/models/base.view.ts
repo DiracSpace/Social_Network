@@ -1,3 +1,3 @@
 export class Baseview {
-    llave_secreta: string;
+    llave_Secreta: string;
 }

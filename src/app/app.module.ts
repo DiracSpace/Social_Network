@@ -6,19 +6,28 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbActiveModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { TextFieldComponent } from './components/text-field.component';
 import { PostComponent } from './components/post.component';
 import { HomeComponent } from './views/home.component';
+import { CreatePostModalComponent } from './components/modals/create-post-modal.component';
+
+const modals = [
+  CreatePostModalComponent
+];
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     TextFieldComponent,
-    PostComponent
+    PostComponent,
+    CreatePostModalComponent
+  ],
+  entryComponents: [
+    ...modals
   ],
   imports: [
     NgxSkeletonLoaderModule,
@@ -29,7 +38,9 @@ import { HomeComponent } from './views/home.component';
     HttpClientModule,
     NgbModule,
   ],
-  providers: [],
+  providers: [
+    NgbActiveModal
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
