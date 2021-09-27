@@ -30,3 +30,24 @@ $app-color-text-dark: #727274;
 .apply-text-gray {
     color: $app-color-text-dark !important;
 }
+
+ngb-accordion{
+
+    .card {
+        border: none;
+    }
+
+    .card-header {
+        background-color: #242526;
+        border-bottom: none;
+    }
+
+    .card-header:first-child {
+        border-radius: 0%;
+    }
+    
+    .card-body {
+        background-color: #242526;
+        color: #e4e6eb;
+    }
+}

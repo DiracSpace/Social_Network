@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { ComentarioRequest, ComentariosResponse } from '../models/comentarios.view';
 import { PublicacionesRequest, PublicacionesResponse } from '../models/publicaciones.view';
 import { ApiService } from '../services/rest-api/api.service';
 
@@ -28,15 +29,36 @@ const template = /*html*/`
         <i *ngIf="!liked" class="material-icons" (click)="onClickLikePost()">favorite_border</i>
         <p>{{ likes }}</p>
       </div>
-      <i class="material-icons">comment</i>
+      <i class="material-icons comments-icon" (click)="acc.toggle('toggle-1'); onClickGetComments()">comment</i>
     </div>
   </div>
+  <ngb-accordion class="mt-4" #acc="ngbAccordion">
+    <ngb-panel class="comment-accordian" id="toggle-1">
+      <ng-template ngbPanelContent class="panel-content">
+        <div *ngIf="hasComments">
+          <div *ngFor="let comment of comments">
+            <p>{{ comment.nombre }} - {{ comment.contenido }}</p>
+          </div>
+        </div>
+        <app-text-field
+          [(value)]="comment.contenido"
+          (enter)="onEnterSend()"
+          placeholder="Escribe un comentario">
+        </app-text-field>
+      </ng-template>
+    </ngb-panel>
+  </ngb-accordion>
 </div>
 `;
 
 const styles = [/*css*/`
 .dropdown-toggle::after {
   display: none;
+}
+
+.comments-icon {
+  cursor: pointer;
+  color: #b0b3b8;
 }
 
 .post-name-container,
@@ -77,10 +99,13 @@ const styles = [/*css*/`
 export class PostComponent implements OnInit {
 
   @Input() value: PublicacionesResponse;
-
   @Output() removed = new EventEmitter<number>();
 
+  comments: ComentariosResponse[] = [];
+  comment: ComentarioRequest = new ComentarioRequest();
+
   liked: boolean = false;
+  hasComments: boolean = false;
 
   constructor(
     private api: ApiService,
@@ -96,6 +121,38 @@ export class PostComponent implements OnInit {
   get likes() { return this.value.cantidadLikes; }
   get postId() { return this.value.idPublicacion; }
   get isLiked() { return this.value.likePropio; }
+
+  async onClickGetComments() {
+    try {
+      this.comments = await this.api.comentarios.getPostComments(this.postId);
+      if (this.comments.length != 0) {
+        this.hasComments = true;
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      console.log("done getting comments");
+    }
+  }
+
+  async onEnterSend() {
+    try {
+      const comment = await this.api.comentarios.createComment({
+        idComentario: 0,
+        idPublicacion: this.postId,
+        idUsuario: environment.IdUsuario,
+        contenido: this.comment.contenido,
+        llave_Secreta: environment.key
+      });
+
+      this.comments.push(...[comment]);
+    } catch (err) {
+      console.error(err)
+    } finally {
+      this.comment.contenido = "";
+      console.log("done sending comment");
+    }
+  }
 
   async onClickLikePost() {
     try {
