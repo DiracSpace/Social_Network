@@ -11,6 +11,7 @@ const template = /*html*/`
       <app-text-field
         [readonly]="true"
         (click)="openCreatePostModal()"
+        (removed)="onClickRemove($event)"
         placeholder="¿Qué estás pensando?">
       </app-text-field>
     </div>
@@ -64,6 +65,10 @@ export class HomeComponent implements OnInit {
     ).catch(
       (error: any) => console.error(error)
     )
+  }
+
+  onClickRemove(postId: any) {
+    this.posts = this.posts.filter(post => post.idPublicacion != postId);
   }
 
   private async createPost(post: PublicacionesRequest) {

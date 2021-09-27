@@ -15,10 +15,15 @@ export class PublicacionesResponse {
 }
 
 export class PublicacionesRequest extends BaseView {
-    idPublicacion: number;
-    idUsuario: number;
+    idPublicacion?: number;
+    idUsuario?: number;
     
     contenido: string;
+}
+
+export class PublicacionesDeleteRequest extends BaseView {
+    idPublicacion: number;
+    idUsuario: number;
 }
 
 export class LikePublicacionRequest extends BaseView {

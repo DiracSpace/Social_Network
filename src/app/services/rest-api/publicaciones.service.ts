@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BaseApiService } from '../base-api.service';
 import { environment } from 'src/environments/environment';
-import { PublicacionesRequest, PublicacionesResponse } from 'src/app/models/publicaciones.view';
+import { PublicacionesDeleteRequest, PublicacionesRequest, PublicacionesResponse } from 'src/app/models/publicaciones.view';
 
 @Injectable({
   providedIn: 'root'
@@ -62,8 +62,8 @@ export class PublicacionesService extends BaseApiService {
    * 
    * @param postId 
    */
-  removePost(postId: number) {
-    return this.http.delete(`${this.url}/${postId}`).toPromise();
+  removePost(postId: number, droppost: PublicacionesDeleteRequest) {
+    return this.http.delete(`${this.url}/${postId}`, { body: droppost }).toPromise();
   }
 
   /**

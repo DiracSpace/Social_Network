@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { PublicacionesResponse } from '../models/publicaciones.view';
+import { PublicacionesRequest, PublicacionesResponse } from '../models/publicaciones.view';
 import { ApiService } from '../services/rest-api/api.service';
 
 const template = /*html*/`
@@ -8,7 +8,13 @@ const template = /*html*/`
   <div class="container d-flex flex-column post-name-container mb-3">
     <div class="d-flex justify-content-between">
       <span><strong>{{ name }}</strong></span>
-      <i class="material-icons options">more_horiz</i>
+      <div ngbDropdown class="d-inline-block">
+        <i class="material-icons options" id="dropdownBasic1" ngbDropdownToggle data-toggle="dropdown">more_horiz</i>
+        <div class="dropdown-menu-dark" ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button ngbDropdownItem (click)="onClickDelete()">Borrar</button>
+          <button ngbDropdownItem (click)="onClickEdit()">Editar</button>
+        </div>
+      </div>
     </div>
     <span>{{ date | date }}</span>
   </div>
@@ -29,6 +35,10 @@ const template = /*html*/`
 `;
 
 const styles = [/*css*/`
+.dropdown-toggle::after {
+  display: none;
+}
+
 .post-name-container,
 .post-content-container,
 .post-reactions-container {
@@ -67,6 +77,8 @@ const styles = [/*css*/`
 export class PostComponent implements OnInit {
 
   @Input() value: PublicacionesResponse;
+
+  @Output() removed = new EventEmitter<number>();
 
   liked: boolean = false;
 
@@ -108,6 +120,51 @@ export class PostComponent implements OnInit {
     } finally {
       this.liked = false;
       this.value.cantidadLikes -= 1;
+    }
+  }
+
+  async onClickDelete() {
+    try {
+      await this.api.publicaciones.removePost(this.postId, {
+        idPublicacion: this.postId,
+        idUsuario: environment.IdUsuario,
+        llave_Secreta: environment.key
+      });
+      this.removed.emit(this.postId);
+    } catch (err) {
+      console.error(err)
+    } finally {
+      console.log("done");
+    }
+  }
+  
+  async onClickEdit() {
+    this.api.modals.openPostModal({
+      contenido: this.value.contenido
+    }).then(
+      (post: PublicacionesRequest) => {
+        if (post != undefined) {
+          this.value.contenido = post.contenido;
+          this.editPost();
+        } 
+      }
+    ).catch(
+      (error: any) => console.error(error)
+    )
+  }
+
+  private async editPost() {
+    try {
+      await this.api.publicaciones.updatePost(this.postId, {
+        idUsuario: environment.IdUsuario,
+        llave_Secreta: environment.key,
+        idPublicacion: this.postId,
+        contenido: this.value.contenido
+      });
+    } catch (err) {
+      console.error(err)
+    } finally {
+      console.log("done");
     }
   }
 }

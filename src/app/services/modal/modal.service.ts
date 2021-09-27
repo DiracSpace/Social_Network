@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreatePostModalComponent } from 'src/app/components/modals/create-post-modal.component';
-import { PublicacionesRequest } from 'src/app/models/publicaciones.view';
+import { PublicacionesRequest, PublicacionesResponse } from 'src/app/models/publicaciones.view';
 import { notNull } from 'src/app/utils/validators';
 
 @Injectable({
