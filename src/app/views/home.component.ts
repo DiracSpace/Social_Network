@@ -17,7 +17,7 @@ const template = /*html*/`
     </div>
 
     <div *ngFor="let post of posts" 
-      class="container p-2 mt-2 posts-container">
+      class="container p-2 mt-2 mb-5 posts-container">
       <app-post
         [value]="post">
       </app-post>
@@ -75,16 +75,19 @@ export class HomeComponent implements OnInit {
     try {
       const createdPost = await this.api.publicaciones.createPost(post);
       this.posts.push(createdPost);
+    } catch (err) {
+      console.error(err)
     } finally {
-      console.log("done");
+      console.log("done creating post");
     }
   }
 
   private async init() {
     this.isLoadingPosts = true;
     try {
-      this.posts = await this.api.publicaciones.getAllPosts(environment.IdUsuario);
-      console.log("this.posts:", this.posts);
+      this.posts = await this.api.publicaciones.getMostRecentPosts();
+    } catch (err) {
+      console.error(err);
     } finally {
       this.isLoadingPosts = false;
     }

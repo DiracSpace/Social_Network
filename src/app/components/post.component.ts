@@ -10,7 +10,8 @@ const template = /*html*/`
     <div class="d-flex justify-content-between">
       <span><strong>{{ name }}</strong></span>
       <div ngbDropdown class="d-inline-block">
-        <i class="material-icons options" id="dropdownBasic1" ngbDropdownToggle data-toggle="dropdown">more_horiz</i>
+        <i *ngIf="canApplyActions" class="material-icons options" 
+          id="dropdownBasic1" ngbDropdownToggle data-toggle="dropdown">more_horiz</i>
         <div class="dropdown-menu-dark" ngbDropdownMenu aria-labelledby="dropdownBasic1">
           <button ngbDropdownItem (click)="onClickDelete()">Borrar</button>
           <button ngbDropdownItem (click)="onClickEdit()">Editar</button>
@@ -37,7 +38,11 @@ const template = /*html*/`
       <ng-template ngbPanelContent class="panel-content">
         <div *ngIf="hasComments">
           <div *ngFor="let comment of comments">
-            <p>{{ comment.nombre }} - {{ comment.contenido }}</p>
+            <div class="comment-container p-3 mb-3">
+              <p>{{ comment.nombre }} - {{ comment.fechaCreacion | date }}</p>
+              <span>{{ comment.contenido }}</span>
+              <br>
+            </div>
           </div>
         </div>
         <app-text-field
@@ -59,6 +64,32 @@ const styles = [/*css*/`
 .comments-icon {
   cursor: pointer;
   color: #b0b3b8;
+}
+
+.comment-container {
+  background-color: #3a3b3c;
+  position: relative;
+  border-radius: 20px;
+
+  p {
+    margin: 0;
+  }
+
+  span {
+    margin-bottom: 5%;
+  }
+
+  .comment-reaction-container {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateX(50%);
+
+    i {
+      cursor: pointer;
+      color: #b0b3b8;
+    }
+  }
 }
 
 .post-name-container,
@@ -120,7 +151,9 @@ export class PostComponent implements OnInit {
   get content() { return this.value.contenido; }
   get likes() { return this.value.cantidadLikes; }
   get postId() { return this.value.idPublicacion; }
+  get postUserId() { return this.value.idUsuario; }
   get isLiked() { return this.value.likePropio; }
+  get canApplyActions() { return (this.postUserId === environment.IdUsuario); }
 
   async onClickGetComments() {
     try {
@@ -161,9 +194,12 @@ export class PostComponent implements OnInit {
         idUsuario: environment.IdUsuario,
         llave_Secreta: environment.key
       });
+    } catch (err) {
+      console.error(err);
     } finally {
       this.liked = true;
       this.value.cantidadLikes += 1;
+      console.log("done liking post");
     }
   }
 
@@ -174,9 +210,12 @@ export class PostComponent implements OnInit {
         idUsuario: environment.IdUsuario,
         llave_Secreta: environment.key
       });
+    } catch (err) {
+      console.error(err);
     } finally {
       this.liked = false;
       this.value.cantidadLikes -= 1;
+      console.log("done unliking post");
     }
   }
 
@@ -191,7 +230,7 @@ export class PostComponent implements OnInit {
     } catch (err) {
       console.error(err)
     } finally {
-      console.log("done");
+      console.log("done deleting comment");
     }
   }
   
@@ -221,7 +260,7 @@ export class PostComponent implements OnInit {
     } catch (err) {
       console.error(err)
     } finally {
-      console.log("done");
+      console.log("done editing post");
     }
   }
 }
